@@ -4,7 +4,7 @@ import {
   FormContainer,
   HomeContainer,
   Separator,
-  StartCountdownButton
+  StartCountdownButton,
 } from './styles'
 
 export const Home = () => {
