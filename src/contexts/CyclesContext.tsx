@@ -93,7 +93,7 @@ export const CyclesContextProvider = ({
   return (
     <CyclesContext.Provider
       value={{
-        cycles, 
+        cycles,
         activeCycle,
         activeCycleId,
         markCurrentCycleAsFinished,
