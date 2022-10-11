@@ -1,5 +1,11 @@
-import { Play } from 'phosphor-react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { differenceInSeconds } from 'date-fns'
+import { Play } from 'phosphor-react'
+import * as zod from 'zod'
+
 import {
   CountdownContainer,
   FormContainer,
@@ -7,12 +13,8 @@ import {
   MinutesAmountInput,
   Separator,
   StartCountdownButton,
-  TaskInput
+  TaskInput,
 } from './styles'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
-import * as zod from 'zod'
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'Informe a tarefa'),
@@ -33,6 +35,7 @@ interface Cycle {
   id: string
   task: string
   minutesAmount: number
+  startDate: Date
 }
 
 export const Home = () => {
@@ -48,25 +51,45 @@ export const Home = () => {
     },
   })
 
+  const activeCycle = cycles.find(
+    (cycle) => cycle.id === activeCycleId,
+  ) /* percorre todos os ciclos e retorna o ciclo que está ativo */
+
+  useEffect(() => {
+    let interval: number
+
+    if (activeCycle) {
+      interval = setInterval(() => {
+        setAmountSecondsPassed(
+          differenceInSeconds(new Date(), activeCycle.startDate),
+        )
+      }, 1000)
+    }
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [activeCycle])
+
   const handleCreateNewCycle = (dataInputs: NewCycleFormData) => {
     const newCycle: Cycle = {
       id: String(new Date().getTime()),
       task: dataInputs.task,
       minutesAmount: dataInputs.minutesAmount,
+      startDate: new Date(),
     }
 
-    setCycles((state) => [
-      ...state,
-      newCycle,
-    ]) /* para pegar o valor anterior e adicionar mais um novo valor ao estado */
-    setActiveCycleId(newCycle.id) /* recebe a informação do ciclo ativo */
+    /* para pegar o valor anterior e adicionar mais um novo valor ao estado */
+    setCycles((state) => [...state, newCycle])
+
+    /* recebe a informação do ciclo ativo */
+    setActiveCycleId(newCycle.id)
+
+    /* volta ao zero os segundos que já foram passados na task anterior */
+    setAmountSecondsPassed(0)
 
     reset()
   }
-
-  const activeCycle = cycles.find(
-    (cycle) => cycle.id === activeCycleId,
-  ) /* percorre todos os ciclos e retorna o ciclo que está ativo */
 
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
