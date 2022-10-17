@@ -73,8 +73,6 @@ export const CyclesContextProvider = ({
 
     /* volta ao zero os segundos que já foram passados na task anterior */
     setAmountSecondsPassed(0)
-
-    // reset()
   }
 
   const interruptCurrentCycle = () => {
