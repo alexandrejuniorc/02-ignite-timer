@@ -18,6 +18,8 @@ export const HistoryList = styled.div`
   overflow: auto;
   margin-top: 2rem;
 
+  max-height: 80%;
+
   table {
     width: 100%;
     border-collapse: collapse; /* não soma o valor das bordas */
